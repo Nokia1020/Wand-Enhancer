@@ -33,12 +33,30 @@ namespace WandEnhancer.Core.Services
         private static ResourceDictionary _englishBaseDictionary;
         private static ResourceDictionary _activeLocaleDictionary;
         private static Dictionary<string, string> _activeStrings = new Dictionary<string, string>();
+        private static bool _loaded;
+
+        /// <summary>
+        /// Loads the locale dictionaries on first use. Startup log lines are emitted before
+        /// the Application finishes starting, so resolving a string has to trigger the load.
+        /// </summary>
+        private static void EnsureLoaded()
+        {
+            if (_loaded || Application.Current == null)
+            {
+                return;
+            }
+
+            _loaded = true;
+            Initialize();
+        }
 
         /// <summary>
         /// Localized string for <paramref name="key"/>, falling back to the key itself.
         /// </summary>
         public static string Get(string key)
         {
+            EnsureLoaded();
+
             // Resolved from a plain snapshot rather than the WPF dictionaries: callers log
             // from background threads, and those dictionaries belong to the UI thread.
             lock (SyncRoot)
@@ -82,6 +100,8 @@ namespace WandEnhancer.Core.Services
 
         public static void Initialize()
         {
+            _loaded = true;
+
             // Load English as the base fallback dictionary
             _englishBaseDictionary = new ResourceDictionary
             {
