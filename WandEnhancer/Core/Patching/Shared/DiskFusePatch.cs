@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using WandEnhancer.Core.Services;
 
 namespace WandEnhancer.Core.Patching.Shared
 {
@@ -15,7 +16,7 @@ namespace WandEnhancer.Core.Patching.Shared
             long offset = ElectronFuseWire.FindStateFileOffset(exePath);
             if (offset < 0)
             {
-                log?.Invoke($"[ENHANCER] No Electron fuse block in {Path.GetFileName(exePath)}; nothing to flip.", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("fuse_no_block", Path.GetFileName(exePath)), ELogType.Warn);
                 return false;
             }
 
@@ -38,7 +39,7 @@ namespace WandEnhancer.Core.Patching.Shared
                 stream.WriteByte(ElectronFuseWire.StateRemoved);
             }
 
-            log?.Invoke($"[ENHANCER] ASAR integrity fuse cleared on disk in {Path.GetFileName(exePath)}.", ELogType.Info);
+            log?.Invoke(LocalizationManager.Format("fuse_cleared", Path.GetFileName(exePath)), ELogType.Info);
             return true;
         }
 
@@ -54,7 +55,7 @@ namespace WandEnhancer.Core.Patching.Shared
             if (offset < 0)
             {
                 // No fuse block to restore; keep backup.
-                log?.Invoke($"[ENHANCER] Could not locate the fuse to restore in {Path.GetFileName(exePath)}; keeping {FuseBackupSuffix}.", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("fuse_restore_missing", Path.GetFileName(exePath), FuseBackupSuffix), ELogType.Warn);
                 return;
             }
 
@@ -65,7 +66,7 @@ namespace WandEnhancer.Core.Patching.Shared
                 stream.WriteByte(original);
             }
 
-            log?.Invoke($"[ENHANCER] ASAR integrity fuse restored on disk in {Path.GetFileName(exePath)}.", ELogType.Info);
+            log?.Invoke(LocalizationManager.Format("fuse_restored", Path.GetFileName(exePath)), ELogType.Info);
             File.Delete(backup);
         }
     }

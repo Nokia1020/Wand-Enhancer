@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using WandEnhancer.Core.Patching.Shared;
 
+using WandEnhancer.Core.Services;
 namespace WandEnhancer.Core.Patching.Strategies.Supervised
 {
     internal sealed class MemoryFuseApplicator : IFuseApplicator
@@ -44,14 +45,15 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
 
             if (!ReadProcessMemory(process, start, block, (UIntPtr)block.Length, out UIntPtr read) || (ulong)read != (ulong)block.Length)
             {
-                problem = $"its memory could not be read ({Win32Error.Describe(Marshal.GetLastWin32Error())})";
+                problem = LocalizationManager.Format("fuse_problem_memory_unreadable",
+                Win32Error.Describe(Marshal.GetLastWin32Error()));
                 return false;
             }
 
             // Validate the fuse block in process memory to prevent overwriting unrelated memory after an update.
             if (!ElectronFuseWire.BlockLooksValid(block, 0))
             {
-                problem = "the fuse block is not where the file on disk said it would be";
+                problem = LocalizationManager.Get("fuse_problem_block_mismatch");
                 return false;
             }
 
@@ -63,7 +65,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
             var target = new IntPtr(imageBase.ToInt64() + stateRva);
             if (!VirtualProtectEx(process, target, (UIntPtr)1, PAGE_READWRITE, out uint previous))
             {
-                problem = $"the page could not be made writable ({Win32Error.Describe(Marshal.GetLastWin32Error())})";
+                problem = LocalizationManager.Format("fuse_problem_page_not_writable",
+                Win32Error.Describe(Marshal.GetLastWin32Error()));
                 return false;
             }
 
@@ -71,7 +74,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
             if (!written)
             {
                 // Preserve the error before restoring memory protection.
-                problem = $"the write was refused ({Win32Error.Describe(Marshal.GetLastWin32Error())})";
+                problem = LocalizationManager.Format("fuse_problem_write_refused",
+                Win32Error.Describe(Marshal.GetLastWin32Error()));
             }
 
             VirtualProtectEx(process, target, (UIntPtr)1, previous, out _);

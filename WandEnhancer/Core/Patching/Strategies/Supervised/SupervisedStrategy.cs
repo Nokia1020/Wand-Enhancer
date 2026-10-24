@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using WandEnhancer.Core.Patching.Shared;
+using WandEnhancer.Core.Services;
 
 namespace WandEnhancer.Core.Patching.Strategies.Supervised
 {
@@ -61,7 +62,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
             catch (Exception e) when (e is System.IO.IOException || e is UnauthorizedAccessException)
             {
                 // Patched Wand exiting with -36861 is useless, so fail early.
-                log?.Invoke($"Could not read {exePath}: {e.Message}", ELogType.Error);
+                log?.Invoke(LocalizationManager.Format("strat_read_failed", exePath, e.Message),
+                    ELogType.Error);
                 return false;
             }
 
@@ -74,10 +76,9 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                     IntPtr.Zero, System.IO.Path.GetDirectoryName(exePath), ref startupInfo, out var info))
             {
                 int error = Marshal.GetLastWin32Error();
-                log?.Invoke($"Could not start Wand ({Win32Error.Describe(error)})." + (error == ERROR_ELEVATION_REQUIRED
-                    ? " Wand is marked \"Run as administrator\", which stops it from being started this way. " +
-                      "Clear that box in the properties of Wand.exe and start it again."
-                    : ""), ELogType.Error);
+                log?.Invoke(LocalizationManager.Format(
+                    error == ERROR_ELEVATION_REQUIRED ? "strat_start_elevation" : "strat_start_failed",
+                    Win32Error.Describe(error)), ELogType.Error);
                 return false;
             }
 
@@ -88,12 +89,13 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
 
             try
             {
-                log?.Invoke($"Started {exePath} as pid {info.dwProcessId}.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Format("strat_started_pid", exePath, info.dwProcessId),
+                    ELogType.Info);
 
                 if (stateRva < 0)
                 {
-                    log?.Invoke($"No Electron fuse block in {exePath}. A patched Wand will exit " +
-                                $"with {AsarIntegrityExitCode}; an unpatched one is unaffected.", ELogType.Error);
+                    log?.Invoke(LocalizationManager.Format("strat_no_fuse_block", exePath,
+                                AsarIntegrityExitCode), ELogType.Error);
                     return false;
                 }
 
@@ -109,8 +111,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
 
                 if (!TryTrackChildren(info.hProcess, out job, out port))
                 {
-                    log?.Invoke($"Could not watch Wand for new processes ({Win32Error.Describe(Marshal.GetLastWin32Error())}). " +
-                                "Wand will run, but the in-game overlay will not.", ELogType.Error);
+                    log?.Invoke(LocalizationManager.Format("strat_watch_failed",
+                                Win32Error.Describe(Marshal.GetLastWin32Error())), ELogType.Error);
                     return false;
                 }
 
@@ -122,11 +124,11 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
 
                 if (!GetExitCodeProcess(info.hProcess, out int exitCode))
                 {
-                    log?.Invoke("Wand exited, and its exit code could not be read.", ELogType.Error);
+                    log?.Invoke(LocalizationManager.Get("strat_exit_unreadable"), ELogType.Error);
                     return false;
                 }
 
-                log?.Invoke($"Wand exited with code {DescribeCode(exitCode)}.",
+                log?.Invoke(LocalizationManager.Format("strat_exited", DescribeCode(exitCode)),
                     exitCode == 0 ? ELogType.Info : ELogType.Error);
 
                 return exitCode == 0 && !IsHandoff(exePath, watchedElsewhere, startedAt, log);
@@ -162,10 +164,7 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                 return false;
             }
 
-            log?.Invoke("Wand quit right after starting: another Wand was already running and took " +
-                        "this launch over. Nothing is clearing the fuse in that instance, which is " +
-                        "why its window stays black. End every Wand task in Task Manager, then start " +
-                        "Wand again.", ELogType.Error);
+            log?.Invoke(LocalizationManager.Get("strat_quit_immediately"), ELogType.Error);
             return true;
         }
 
@@ -321,8 +320,9 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                 }
             }
 
-            log?.Invoke($"Wand closed: fuse cleared in {cleared} processes" + (missed == 0 ? "." : $", {missed} missed."),
-                missed == 0 ? ELogType.Info : ELogType.Warn);
+            log?.Invoke(LocalizationManager.Format(
+                    missed == 0 ? "strat_fuse_cleared_all" : "strat_fuse_cleared_missed",
+                    cleared, missed), missed == 0 ? ELogType.Info : ELogType.Warn);
         }
 
         private void RetryPending(List<PendingClear> pending, long stateRva, IntPtr imageBase,
@@ -338,8 +338,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                 else if (Environment.TickCount - entry.Deadline >= 0)
                 {
                     missed++;
-                    log?.Invoke($"Fuse not cleared in pid {Describe(entry)} after {ClearWindowMs} ms: " +
-                                $"{entry.Problem}. It may exit with {AsarIntegrityExitCode}.", ELogType.Warn);
+                    log?.Invoke(LocalizationManager.Format("strat_fuse_timeout", Describe(entry),
+                                ClearWindowMs, entry.Problem, AsarIntegrityExitCode), ELogType.Warn);
                     pending.RemoveAt(i);
                 }
             }
@@ -354,7 +354,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                 entry.Process = OpenProcess(ProcessAccess, false, entry.ProcessId);
                 if (entry.Process == IntPtr.Zero)
                 {
-                    entry.Problem = $"it could not be opened ({Win32Error.Describe(Marshal.GetLastWin32Error())})";
+                    entry.Problem = LocalizationManager.Format("fuse_problem_open_failed",
+                    Win32Error.Describe(Marshal.GetLastWin32Error()));
                     return false;
                 }
 
@@ -374,7 +375,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
             }
 
             cleared++;
-            log?.Invoke($"pid {Describe(entry)} started - fuse cleared.", ELogType.Info);
+            log?.Invoke(LocalizationManager.Format("strat_pid_cleared", Describe(entry)),
+                    ELogType.Info);
             return true;
         }
 
@@ -387,8 +389,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
                 return false;
             }
 
-            log?.Invoke($"Fuse not cleared in pid {Describe(pending[index])} before it exited: " +
-                        $"{pending[index].Problem}.", ELogType.Warn);
+            log?.Invoke(LocalizationManager.Format("strat_fuse_missed_on_exit",
+                        Describe(pending[index]), pending[index].Problem), ELogType.Warn);
             pending.RemoveAt(index);
             return true;
         }
@@ -409,7 +411,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Supervised
             tracked.Remove(processId);
             if (GetExitCodeProcess(process, out int exitCode) && exitCode != 0)
             {
-                log?.Invoke($"pid {processId} exited with code {DescribeCode(exitCode)}.", ELogType.Error);
+                log?.Invoke(LocalizationManager.Format("strat_pid_exited", processId,
+                    DescribeCode(exitCode)), ELogType.Error);
             }
 
             CloseHandle(process);

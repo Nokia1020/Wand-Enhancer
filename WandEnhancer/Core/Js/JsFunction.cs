@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using WandEnhancer.Core.Services;
 
 namespace WandEnhancer.Core.Js
 {
@@ -35,7 +36,7 @@ namespace WandEnhancer.Core.Js
             var match = Regex.Match(Body, pattern, RegexOptions.Singleline);
             if (!match.Success || string.IsNullOrEmpty(match.Groups[group].Value))
             {
-                throw new Exception($"Could not resolve '{group}' inside {Name}()");
+                throw new Exception(LocalizationManager.Format("jsf_resolve_failed", group, Name));
             }
 
             return match.Groups[group].Value;
@@ -47,7 +48,7 @@ namespace WandEnhancer.Core.Js
             var match = Regex.Match(Body, pattern, RegexOptions.Singleline);
             if (!match.Success)
             {
-                throw new Exception($"Pattern '{pattern}' not found inside {Name}()");
+                throw new Exception(LocalizationManager.Format("jsf_pattern_missing", pattern, Name));
             }
 
             int start = BodyOpen + 1 + match.Index;
@@ -77,7 +78,7 @@ namespace WandEnhancer.Core.Js
 
             if (keywordEnd < 0)
             {
-                throw new Exception($"No top-level return statement in {Name}()");
+                throw new Exception(LocalizationManager.Format("jsf_no_return", Name));
             }
 
             int expressionStart = body.SkipWhitespaceForward(keywordEnd);

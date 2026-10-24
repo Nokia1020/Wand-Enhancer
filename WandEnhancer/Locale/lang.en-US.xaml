@@ -11,9 +11,7 @@
     <s:String x:Key="mw_folder_not_found">Folder not found</s:String>
     <s:String x:Key="mw_patch">Enhance</s:String>
     <s:String x:Key="mw_restore">Restore</s:String>
-    <s:String x:Key="mw_source_code">Source code</s:String>
-    <s:String x:Key="mw_made_by">Made with ❤️ by k1tbyte</s:String>
-    <s:String x:Key="mw_star_hint">Put a star if you found this helpful ;)</s:String>
+    <s:String x:Key="mw_footer_note">Original author: k1tbyte. Chinese build released under the Apache License.</s:String>
     <s:String x:Key="mw_copy_logs">Copy logs to clipboard</s:String>
     <s:String x:Key="mw_export_logs">Export logs to file</s:String>
     <s:String x:Key="mw_update_badge">New version available</s:String>
@@ -60,20 +58,158 @@
     <!--#endregion -->
 
     <!--#region Runtime log -->
-    <s:String x:Key="log_install_found">WeMod directory found at {0} ({1})</s:String>
-    <s:String x:Key="log_already_patched">WeMod already patched. If you want to patch again, please restore the backup first.</s:String>
-    <s:String x:Key="log_ready">Ready for patching.</s:String>
-    <s:String x:Key="log_install_not_found">WeMod directory not found.</s:String>
-    <s:String x:Key="log_no_directory">Cant be done. Please specify the directory first.</s:String>
-    <s:String x:Key="log_invalid_directory">The selected folder {0} is not a valid WeMod directory.</s:String>
-    <s:String x:Key="log_restore_failed">Failed to restore backup: {0}</s:String>
+    <s:String x:Key="log_type_info">INFO</s:String>
+    <s:String x:Key="log_type_warn">WARN</s:String>
+    <s:String x:Key="log_type_error">ERROR</s:String>
+    <s:String x:Key="log_type_success">SUCCESS</s:String>
+    <s:String x:Key="log_install_found">WeMod(Wand) install directory: {0} ({1})</s:String>
+    <s:String x:Key="log_already_patched">WeMod(Wand) is already patched. To patch again, restore the original backup first.</s:String>
+    <s:String x:Key="log_ready">Ready to patch.</s:String>
+    <s:String x:Key="log_install_not_found">WeMod(Wand) install directory not found.</s:String>
+    <s:String x:Key="log_no_directory">Cannot proceed. Please specify the directory first.</s:String>
+    <s:String x:Key="log_invalid_directory">The selected folder {0} is not a valid WeMod(Wand) directory.</s:String>
+    <s:String x:Key="log_restore_failed">Failed to restore the backup: {0}</s:String>
     <s:String x:Key="log_patch_failed">Failed to patch: {0}</s:String>
     <s:String x:Key="log_copied">Logs copied to clipboard.</s:String>
     <s:String x:Key="log_copy_failed">Failed to copy logs: {0}</s:String>
     <s:String x:Key="log_exported">Logs exported to {0}.</s:String>
     <s:String x:Key="log_export_failed">Failed to export logs: {0}</s:String>
-    <s:String x:Key="log_open_link_failed">Could not open {0} in a browser.</s:String>
-    <s:String x:Key="dialog_pick_install">Select the WeMod directory</s:String>
+    <s:String x:Key="dialog_pick_install">Select the WeMod(Wand) directory</s:String>
     <!--#endregion -->
 
+    <!--#region Patching engine -->
+    <s:String x:Key="enh_backup_creating">Creating backup...</s:String>
+    <s:String x:Key="enh_backup_restoring_before_patch">Backup found, restoring the pristine app.asar before patching...</s:String>
+    <s:String x:Key="enh_unpacked_backup_creating">Creating a backup of app.asar.unpacked...</s:String>
+    <s:String x:Key="enh_unpacked_restoring_before_patch">Restoring the pristine app.asar.unpacked before patching...</s:String>
+    <s:String x:Key="enh_unpacked_missing">app.asar.unpacked is missing and no backup exists. Restore the original WeMod(Wand) installation files or reinstall WeMod(Wand), then patch again.</s:String>
+    <s:String x:Key="enh_app_asar_missing">app.asar not found</s:String>
+    <s:String x:Key="enh_patch_done">Done!</s:String>
+    <s:String x:Key="enh_extracting_asar">Extracting app.asar...</s:String>
+    <s:String x:Key="enh_unpack_failed">Failed to unpack app.asar: {0}</s:String>
+    <s:String x:Key="enh_pack_failed">Failed to pack app.asar: {0}</s:String>
+    <s:String x:Key="enh_patch_failed_restored">Patch failed - the original WeMod(Wand) files were restored.</s:String>
+    <s:String x:Key="enh_patch_failed_rollback_incomplete">Patch failed and the rollback did not finish: {0}. Use Restore before launching WeMod(Wand).</s:String>
+    <s:String x:Key="enh_backup_incomplete">Backup is incomplete. Restore the original WeMod(Wand) installation files or reinstall WeMod(Wand).</s:String>
+    <s:String x:Key="enh_backup_restored">Backup restored successfully.</s:String>
+    <!--#endregion -->
+
+    <!--#region Auxiliary compatibility -->
+    <s:String x:Key="aux_not_managed">{0} is not a managed image; leaving it alone.</s:String>
+    <s:String x:Key="aux_no_caller">No {0} caller found in {1}; the auxiliary service may have changed.</s:String>
+    <s:String x:Key="aux_compat_applied">Auxiliary compatibility applied ({0} signature, {1} ASAR, {2} fuse check(s), {3} changed).</s:String>
+    <!--#endregion -->
+
+    <!--#region Supervised strategy -->
+    <s:String x:Key="strat_read_failed">Could not read {0}: {1}</s:String>
+    <s:String x:Key="strat_start_failed">Could not start WeMod(Wand): {0}</s:String>
+    <s:String x:Key="strat_start_elevation">Could not start WeMod(Wand) ({0}). WeMod(Wand) is marked "Run as administrator", which stops it from being started this way. Clear that box in the properties of Wand.exe and start it again.</s:String>
+    <s:String x:Key="strat_started_pid">Started {0} as pid {1}.</s:String>
+    <s:String x:Key="strat_no_fuse_block">No Electron fuse block in {0}. A patched WeMod(Wand) will exit with {1}; an unpatched one is unaffected.</s:String>
+    <s:String x:Key="strat_watch_failed">Could not watch WeMod(Wand) for new processes ({0}). WeMod(Wand) will run, but the in-game overlay will not.</s:String>
+    <s:String x:Key="strat_exit_unreadable">WeMod(Wand) exited, and its exit code could not be read.</s:String>
+    <s:String x:Key="strat_exited">WeMod(Wand) exited with code {0}.</s:String>
+    <s:String x:Key="strat_quit_immediately">WeMod(Wand) quit right after starting: another WeMod(Wand) was already running and took this launch over. Nothing is clearing the fuse in that instance, which is why its window stays black. End every WeMod(Wand) task in Task Manager, then start WeMod(Wand) again.</s:String>
+    <s:String x:Key="strat_fuse_cleared_all">WeMod(Wand) closed: fuse cleared in {0} processes.</s:String>
+    <s:String x:Key="strat_fuse_cleared_missed">WeMod(Wand) closed: fuse cleared in {0} processes, {1} missed.</s:String>
+    <s:String x:Key="strat_fuse_timeout">Fuse not cleared in pid {0} after {1} ms: {2}. It may exit with {3}.</s:String>
+    <s:String x:Key="strat_pid_cleared">pid {0} started - fuse cleared.</s:String>
+    <s:String x:Key="strat_fuse_missed_on_exit">Fuse not cleared in pid {0} before it exited: {1}.</s:String>
+    <s:String x:Key="strat_pid_exited">pid {0} exited with code {1}.</s:String>
+    <!--#endregion -->
+
+    <!--#region Static strategy -->
+    <s:String x:Key="strat_fuse_clear_failed">Could not clear the ASAR integrity fuse in {0}.</s:String>
+    <!--#endregion -->
+
+    <!--#region ASAR content -->
+    <s:String x:Key="asar_no_bundle">No app bundle found</s:String>
+    <s:String x:Key="asar_capability_missing">[{0}] capability not present, skipping</s:String>
+    <s:String x:Key="asar_apply_failed">Failed to apply patches: {0}. The version may not be supported.</s:String>
+    <!--#endregion -->
+
+    <!--#region JavaScript patches -->
+    <s:String x:Key="js_patch_failed">[{0}] {1}. The version may not be supported.</s:String>
+    <s:String x:Key="js_target_found">[{0}] found the target in: {1}</s:String>
+    <s:String x:Key="js_patch_applied">[{0}] patch applied</s:String>
+    <!--#endregion -->
+
+    <!--#region Remote panel -->
+    <s:String x:Key="rpanel_bridge_missing">Remote bridge artifact is missing. Run `cd web-panel &amp;&amp; pnpm run build` before patching.</s:String>
+    <s:String x:Key="rpanel_scripts_missing">Remote renderer script artifacts are missing. Run `cd web-panel &amp;&amp; pnpm run build` before patching.</s:String>
+    <s:String x:Key="rpanel_injected">Injected remote panel assets and renderer scripts into app.asar (default: {0}, selected: {1}, local: {2})</s:String>
+    <s:String x:Key="ws_artifact_missing">Required workspace artifact not found: {0}</s:String>
+    <s:String x:Key="ws_resource_missing">Embedded resource not found: {0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Launcher deployment -->
+    <s:String x:Key="launch_icon_copy_failed">Could not copy the WeMod(Wand) icon to the launcher; using the default.</s:String>
+    <s:String x:Key="launch_deployed">Launcher deployed to the root directory</s:String>
+    <s:String x:Key="launch_squirrel_root_unknown">Cannot determine the Squirrel root directory</s:String>
+    <!--#endregion -->
+
+    <!--#region Update watcher -->
+    <s:String x:Key="watch_already_owned">Another watcher already owns this install; exiting.</s:String>
+    <s:String x:Key="watch_watching">Watching {0} for new WeMod(Wand) versions.</s:String>
+    <s:String x:Key="watch_disabled">Auto-apply is no longer configured; exiting.</s:String>
+    <s:String x:Key="watch_stopped">Stop requested; exiting.</s:String>
+    <s:String x:Key="watch_new_folder">New version folder detected: {0}</s:String>
+    <s:String x:Key="watch_settle_timeout">Gave up waiting for {0} to finish installing.</s:String>
+    <s:String x:Key="watch_disabled_while_waiting">Auto-apply was turned off while waiting; skipping.</s:String>
+    <s:String x:Key="watch_not_latest">{0} is not (or no longer) the latest install; skipping.</s:String>
+    <s:String x:Key="watch_already_patched">{0} is already patched; nothing to do.</s:String>
+    <s:String x:Key="watch_reapplying">Re-applying patches to {0}...</s:String>
+    <s:String x:Key="watch_succeeded">Auto-patch after update succeeded.</s:String>
+    <s:String x:Key="watch_failed">Auto-patch after update failed: {0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Startup -->
+    <s:String x:Key="prog_no_install_under">No WeMod(Wand) install found under {0}; opening the UI instead.</s:String>
+    <s:String x:Key="prog_auto_patch_failed">Auto-patch failed: {0}</s:String>
+    <s:String x:Key="prog_auto_patch_hint">The new WeMod(Wand) version may need updated patches. Restore the backup and patch again.</s:String>
+    <s:String x:Key="prog_background_failed">Background task failed: {0}</s:String>
+    <s:String x:Key="prog_unknown_error">Unknown error</s:String>
+    <s:String x:Key="up_changelog_load_failed">Could not load the full changelog: {0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Patch locator internals -->
+    <s:String x:Key="cfg_remote_setvalue_call">Remote setValue call</s:String>
+    <s:String x:Key="cfg_trainer_info_param">Trainer info parameter</s:String>
+    <s:String x:Key="cfg_client_state_missing">client-state payload object could not be located</s:String>
+    <s:String x:Key="cfg_remote_listener_missing">Remote value listener could not be located</s:String>
+    <s:String x:Key="cfg_remote_handler_missing">Remote value handler could not be located</s:String>
+    <s:String x:Key="cfg_subscription_missing">Trainer value subscription could not be located</s:String>
+    <s:String x:Key="cfg_callback_missing">Trainer value callback could not be located</s:String>
+    <s:String x:Key="cfg_locate_failed">{0} could not be located</s:String>
+    <s:String x:Key="cfg_ambiguous">{0} matched more than once; cannot tell which call site is the right one</s:String>
+    <s:String x:Key="jsf_resolve_failed">Could not resolve '{0}' inside {1}()</s:String>
+    <s:String x:Key="jsf_pattern_missing">Pattern '{0}' not found inside {1}()</s:String>
+    <s:String x:Key="jsf_no_return">No top-level return statement in {0}()</s:String>
+    <!--#endregion -->
+
+
+    <!--#region ASAR integrity fuse -->
+    <s:String x:Key="fuse_no_block">No Electron fuse block in {0}; nothing to flip.</s:String>
+    <s:String x:Key="fuse_cleared">ASAR integrity fuse cleared on disk in {0}.</s:String>
+    <s:String x:Key="fuse_restore_missing">Could not locate the fuse to restore in {0}; keeping {1}.</s:String>
+    <s:String x:Key="fuse_restored">ASAR integrity fuse restored on disk in {0}.</s:String>
+    <s:String x:Key="fuse_problem_memory_unreadable">its memory could not be read ({0})</s:String>
+    <s:String x:Key="fuse_problem_block_mismatch">the fuse block is not where the file on disk said it would be</s:String>
+    <s:String x:Key="fuse_problem_page_not_writable">the page could not be made writable ({0})</s:String>
+    <s:String x:Key="fuse_problem_write_refused">the write was refused ({0})</s:String>
+    <s:String x:Key="fuse_problem_open_failed">it could not be opened ({0})</s:String>
+    <s:String x:Key="aux_not_found">No auxiliary service found; skipping compatibility checks.</s:String>
+    <s:String x:Key="aux_unsupported">Unsupported auxiliary service; it would reject the patched WeMod(Wand).</s:String>
+    <s:String x:Key="aux_asar_signature_unknown">Unrecognised auxiliary ASAR validation signature.</s:String>
+    <s:String x:Key="aux_asar_anchor_overlap">Auxiliary ASAR anchors overlap the return stub.</s:String>
+    <s:String x:Key="aux_asar_ambiguous">Ambiguous auxiliary ASAR validation methods.</s:String>
+    <s:String x:Key="aux_asar_unrecognised">Auxiliary ASAR validation detected but not recognised.</s:String>
+    <s:String x:Key="aux_fuse_reader_ambiguous">Ambiguous auxiliary Electron fuse readers.</s:String>
+    <s:String x:Key="aux_fuse_signature_unknown">Unrecognised auxiliary fuse validation signature.</s:String>
+    <s:String x:Key="aux_fuse_reader_overlap">Auxiliary fuse reader call overlaps the return stub.</s:String>
+    <s:String x:Key="aux_fuse_unrecognised">Auxiliary fuse validation detected but not recognised.</s:String>
+    <s:String x:Key="watch_setup_failed">Could not set up the background update watcher: {0}</s:String>
+    <s:String x:Key="watch_already_running">Update watcher is already running.</s:String>
+    <s:String x:Key="watch_installed">Update watcher installed and running in the background.</s:String>
+    <!--#endregion -->
 </ResourceDictionary>

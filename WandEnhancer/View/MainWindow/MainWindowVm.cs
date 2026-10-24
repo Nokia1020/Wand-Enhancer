@@ -180,12 +180,13 @@ namespace WandEnhancer.View.MainWindow
 
         private void Log(string message, ELogType logType)
         {
+            string level = LocalizationManager.Get("log_type_" + logType.ToString().ToLowerInvariant());
             Application.Current.Dispatcher.Invoke(() =>
             {
                 var entry = new LogEntry
                 {
                     LogType = logType,
-                    Message = $"[{logType.ToString().ToUpper()}] {message}"
+                    Message = $"[{level}] {message}"
                 };
                 LogList.Add(entry);
                 _shell.ScrollLogIntoView(entry);
@@ -245,12 +246,6 @@ namespace WandEnhancer.View.MainWindow
 
         private bool HasLogs(object param) => LogList.Count > 0;
 
-        /// <summary>Displays the repository URL if the browser fails to open.</summary>
-        public void ReportRepositoryLinkFailure(string url)
-        {
-            Log(LocalizationManager.Format("log_open_link_failed", url), ELogType.Warn);
-        }
-
         public MainWindowVm(IShellView shell, IFileDialogs dialogs)
         {
             _shell = shell;
@@ -270,7 +265,7 @@ namespace WandEnhancer.View.MainWindow
 
             foreach (var entry in Program.StartupLog)
             {
-                Log(entry.Key, entry.Value);
+                Log(entry.Message, entry.Type);
             }
             Program.StartupLog.Clear();
 

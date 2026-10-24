@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Reflection.PortableExecutable;
 
+using WandEnhancer.Core.Services;
 namespace WandEnhancer.Core.Patching.Strategies.Static
 {
     internal sealed class DotNetImage : IDisposable
@@ -66,18 +67,18 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
 
                 // The located method must be static, take one string and return
                 // Wand's Int32-backed status enum (zero is the valid status).
-                if (!HasStatusSignature(method, false)) throw new InvalidDataException("Unrecognised auxiliary ASAR validation signature.");
+                if (!HasStatusSignature(method, false)) throw new InvalidDataException(LocalizationManager.Get("aux_asar_signature_unknown"));
                 var body = GetValidationBody(rva, il);
                 // Leave the remaining IL on instruction boundaries so the same
                 // anchors remain readable on a second patch pass.
                 var remaining = new byte[il.Length - body.StubSize];
                 Array.Copy(il, body.StubSize, remaining, 0, remaining.Length);
                 if (!BodyContainsString(remaining, @"resources\app.asar") || !BodyContainsString(remaining, "SHA256"))
-                    throw new InvalidDataException("Auxiliary ASAR anchors overlap the return stub.");
+                    throw new InvalidDataException(LocalizationManager.Get("aux_asar_anchor_overlap"));
                 hits.Add(body);
             }
-            if (hits.Count > 1) throw new InvalidDataException("Ambiguous auxiliary ASAR validation methods.");
-            if (hasAsarCapability && hits.Count == 0) throw new InvalidDataException("Auxiliary ASAR validation detected but not recognised.");
+            if (hits.Count > 1) throw new InvalidDataException(LocalizationManager.Get("aux_asar_ambiguous"));
+            if (hasAsarCapability && hits.Count == 0) throw new InvalidDataException(LocalizationManager.Get("aux_asar_unrecognised"));
             return hits;
         }
 
@@ -92,7 +93,7 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
                 var il = _pe.GetMethodBody(method.RelativeVirtualAddress).GetILBytes();
                 if (!BodyContainsString(il, "The Electron fuse sentinel was not found.")
                     || !BodyContainsString(il, "The Electron fuse wire is invalid.")) continue;
-                if (readerToken != 0) throw new InvalidDataException("Ambiguous auxiliary Electron fuse readers.");
+                if (readerToken != 0) throw new InvalidDataException(LocalizationManager.Get("aux_fuse_reader_ambiguous"));
                 readerToken = MetadataTokens.GetToken(handle);
             }
             var hits = new List<ValidationBody>();
@@ -104,14 +105,14 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
                 if (rva == 0) continue;
                 var il = _pe.GetMethodBody(rva).GetILBytes();
                 if (!BodyCalls(il, readerToken)) continue;
-                if (!HasStatusSignature(method, true)) throw new InvalidDataException("Unrecognised auxiliary fuse validation signature.");
+                if (!HasStatusSignature(method, true)) throw new InvalidDataException(LocalizationManager.Get("aux_fuse_signature_unknown"));
                 var body = GetValidationBody(rva, il);
                 var remaining = new byte[il.Length - body.StubSize];
                 Array.Copy(il, body.StubSize, remaining, 0, remaining.Length);
-                if (!BodyCalls(remaining, readerToken)) throw new InvalidDataException("Auxiliary fuse reader call overlaps the return stub.");
+                if (!BodyCalls(remaining, readerToken)) throw new InvalidDataException(LocalizationManager.Get("aux_fuse_reader_overlap"));
                 hits.Add(body);
             }
-            if (hits.Count != 1) throw new InvalidDataException("Auxiliary fuse validation detected but not recognised.");
+            if (hits.Count != 1) throw new InvalidDataException(LocalizationManager.Get("aux_fuse_unrecognised"));
             return hits;
         }
 

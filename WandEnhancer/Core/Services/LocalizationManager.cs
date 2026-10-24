@@ -27,16 +27,45 @@ namespace WandEnhancer.Core.Services
             new CultureInfo("bn-BD")
         };
 
+        private static readonly object SyncRoot = new object();
+
         private static CultureInfo _currentLanguage;
         private static ResourceDictionary _englishBaseDictionary;
         private static ResourceDictionary _activeLocaleDictionary;
+        private static Dictionary<string, string> _activeStrings = new Dictionary<string, string>();
 
         /// <summary>
         /// Localized string for <paramref name="key"/>, falling back to the key itself.
         /// </summary>
         public static string Get(string key)
         {
-            return Application.Current?.TryFindResource(key) as string ?? key;
+            // Resolved from a plain snapshot rather than the WPF dictionaries: callers log
+            // from background threads, and those dictionaries belong to the UI thread.
+            lock (SyncRoot)
+            {
+                string localized;
+                if (_activeStrings.TryGetValue(key, out localized))
+                {
+                    return localized;
+                }
+            }
+
+            // No Application exists in the headless launcher/watcher processes, so fall back
+            // to the compiled-in source text instead of leaking a resource key into a log.
+            string sourceText;
+            if (LocalizationFallback.English.TryGetValue(key, out sourceText))
+            {
+                return sourceText;
+            }
+
+            var application = Application.Current;
+            if (application != null && application.Dispatcher != null &&
+                application.Dispatcher.CheckAccess())
+            {
+                return application.TryFindResource(key) as string ?? key;
+            }
+
+            return key;
         }
 
         /// <summary>Localized format string filled with <paramref name="args"/>.</summary>
@@ -77,6 +106,9 @@ namespace WandEnhancer.Core.Services
                     c.TwoLetterISOLanguageName == systemCulture.TwoLetterISOLanguageName);
             }
             
+            // Force a re-apply: the locale dictionary is rebuilt from scratch here, and the
+            // language may be unchanged since a previous call.
+            _currentLanguage = null;
             SetLanguage(targetCulture ?? SupportedLanguages[0], saveSettings: false);
         }
 
@@ -120,18 +152,41 @@ namespace WandEnhancer.Core.Services
                 localeDict[entry.Key] = targetDict[entry.Key];
             }
 
-            // Track injected dictionary to replace it on switch instead of appending.
-            var merged = Application.Current.Resources.MergedDictionaries;
-            if (_activeLocaleDictionary != null && merged.Contains(_activeLocaleDictionary))
+            // Keep a plain snapshot so background threads can resolve strings without
+            // touching the UI-thread-owned resource dictionaries.
+            var snapshot = new Dictionary<string, string>();
+            foreach (DictionaryEntry entry in localeDict)
             {
-                merged[merged.IndexOf(_activeLocaleDictionary)] = localeDict;
-            }
-            else
-            {
-                merged.Add(localeDict);
+                var entryKey = entry.Key as string;
+                var entryValue = entry.Value as string;
+                if (entryKey != null && entryValue != null)
+                {
+                    snapshot[entryKey] = entryValue;
+                }
             }
 
-            _activeLocaleDictionary = localeDict;
+            lock (SyncRoot)
+            {
+                _activeStrings = snapshot;
+            }
+
+            // Track injected dictionary to replace it on switch instead of appending.
+            // Application.Current is null in the headless launcher/watcher processes.
+            var application = Application.Current;
+            if (application != null)
+            {
+                var merged = application.Resources.MergedDictionaries;
+                if (_activeLocaleDictionary != null && merged.Contains(_activeLocaleDictionary))
+                {
+                    merged[merged.IndexOf(_activeLocaleDictionary)] = localeDict;
+                }
+                else
+                {
+                    merged.Add(localeDict);
+                }
+
+                _activeLocaleDictionary = localeDict;
+            }
             
             if (saveSettings)
             {

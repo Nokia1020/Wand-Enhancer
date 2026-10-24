@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using WandEnhancer.Core.Js;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 
 namespace WandEnhancer.Core
@@ -37,7 +38,7 @@ namespace WandEnhancer.Core
             }
             catch (Exception e)
             {
-                throw new Exception($"[ENHANCER] [{label}] {e.Message}. The version may not be supported.", e);
+                throw new Exception(LocalizationManager.Format("js_patch_failed", label, e.Message), e);
             }
 
             if (edits == null || edits.Length == 0)
@@ -45,13 +46,14 @@ namespace WandEnhancer.Core
                 return source;
             }
 
-            _logger($"[ENHANCER] [{label}] Found target in: {Path.GetFileName(fileName)}", ELogType.Info);
+            _logger(LocalizationManager.Format("js_target_found", label, Path.GetFileName(fileName)),
+                ELogType.Info);
             foreach (var edit in edits.OrderByDescending(edit => edit.Start))
             {
                 source = edit.ApplyTo(source);
             }
 
-            _logger($"[ENHANCER] [{label}] Patch applied", ELogType.Success);
+            _logger(LocalizationManager.Format("js_patch_applied", label), ELogType.Success);
             patch.Applied = true;
             patchApplied = true;
             return source;

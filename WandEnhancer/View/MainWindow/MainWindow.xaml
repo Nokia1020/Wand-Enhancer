@@ -219,27 +219,11 @@
 
                 
                 <DockPanel Grid.Row="2" Margin="10 0 10 10">
-                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" 
-                                Cursor="Hand" 
-                                HorizontalAlignment="Left"
-                                MouseDown="OpenSourceClicked" 
-                                Background="Transparent">
-                        <Viewbox VerticalAlignment="Center" Width="32" Height="32">
-                            <Path 
-                                Fill="White" Data="{StaticResource GitHub}"/>
-                        </Viewbox>
-                        <Grid>
-                            <TextBlock Margin="8 0 0 0"  FontSize="10" Foreground="{DynamicResource AccentForeground}">
-                                <Hyperlink Foreground="{DynamicResource AccentForeground}"><Run Text="{DynamicResource mw_source_code}"/></Hyperlink>
-                                <LineBreak/>
-                                <Run Text="{DynamicResource mw_made_by}"/>
-                                
-                                
-                                <LineBreak/>
-                                <Run Foreground="{DynamicResource MutedForeground}" Text="{DynamicResource mw_star_hint}"/>
-                            </TextBlock>
-                        </Grid>
-                    </StackPanel>
+                    <TextBlock VerticalAlignment="Center"
+                               HorizontalAlignment="Left"
+                               FontSize="10"
+                               Foreground="{DynamicResource MutedForeground}"
+                               Text="{DynamicResource mw_footer_note}"/>
                 </DockPanel>
             </Grid>
             

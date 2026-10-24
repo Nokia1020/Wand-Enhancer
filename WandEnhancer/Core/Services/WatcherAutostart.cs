@@ -31,14 +31,14 @@ namespace WandEnhancer.Core.Services
             }
             catch (Exception e)
             {
-                log?.Invoke($"[ENHANCER] Could not set up the background update watcher: {e.Message}", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("watch_setup_failed", e.Message), ELogType.Warn);
                 return;
             }
 
             if (Mutex.TryOpenExisting(UpdateWatcherService.MutexName(squirrelRoot), out Mutex existing))
             {
                 existing.Dispose();
-                log?.Invoke("[ENHANCER] Update watcher is already running.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Get("watch_already_running"), ELogType.Info);
                 return;
             }
 
@@ -54,11 +54,11 @@ namespace WandEnhancer.Core.Services
 
                 RegisterRunKey(install, watcherPath, squirrelRoot);
                 StartDetached(watcherPath, squirrelRoot);
-                log?.Invoke("[ENHANCER] Update watcher installed and running in the background.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Get("watch_installed"), ELogType.Info);
             }
             catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is SecurityException)
             {
-                log?.Invoke($"[ENHANCER] Could not set up the background update watcher: {e.Message}", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("watch_setup_failed", e.Message), ELogType.Warn);
             }
         }
 

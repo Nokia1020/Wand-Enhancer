@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using WandEnhancer.Core.Services;
 
 namespace WandEnhancer.Core.Patching.Strategies.Static
 {
@@ -23,7 +24,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
             {
                 if (image == null)
                 {
-                    log?.Invoke($"[ENHANCER] {Path.GetFileName(auxPath)} is not a managed image; leaving it alone.", ELogType.Warn);
+                    log?.Invoke(LocalizationManager.Format("aux_not_managed", Path.GetFileName(auxPath)),
+                    ELogType.Warn);
                     return -1;
                 }
 
@@ -36,7 +38,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
 
             if (offsets.Count == 0)
             {
-                log?.Invoke($"[ENHANCER] No {ImportName} caller found in {Path.GetFileName(auxPath)}; the aux may have changed.", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("aux_no_caller", ImportName, Path.GetFileName(auxPath)),
+                    ELogType.Warn);
                 return -1;
             }
 
@@ -83,7 +86,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
                 }
             }
 
-            log?.Invoke($"[ENHANCER] Auxiliary compatibility applied ({offsets.Count} signature, {archiveCount} ASAR, {fuseCount} fuse check(s), {stubbed} changed).", ELogType.Info);
+            log?.Invoke(LocalizationManager.Format("aux_compat_applied", offsets.Count, archiveCount,
+                    fuseCount, stubbed), ELogType.Info);
             return stubbed;
         }
     }

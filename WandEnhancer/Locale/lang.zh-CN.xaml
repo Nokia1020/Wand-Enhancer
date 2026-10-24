@@ -11,17 +11,32 @@
     <s:String x:Key="mw_folder_not_found">未找到文件夹</s:String>
     <s:String x:Key="mw_patch">增强</s:String>
     <s:String x:Key="mw_restore">恢复</s:String>
-    <s:String x:Key="mw_source_code">源代码</s:String>
-    <s:String x:Key="mw_made_by">由 k1tbyte 用 ❤️ 制作</s:String>
-    <s:String x:Key="mw_star_hint">如果这对您有帮助，请给个星标 ;)</s:String>
+    <s:String x:Key="mw_footer_note">原作者k1tbyte，中文版基于Apache License发布</s:String>
     <s:String x:Key="mw_copy_logs">复制日志到剪贴板</s:String>
     <s:String x:Key="mw_export_logs">将日志导出到文件</s:String>
+    <s:String x:Key="mw_update_badge">有新版本可用</s:String>
     <!--#endregion -->
 
     <!--#region Settings -->
     <s:String x:Key="settings_title">设置</s:String>
     <s:String x:Key="settings_language">语言</s:String>
+    <s:String x:Key="settings_check_updates">启动时检查更新</s:String>
+    <s:String x:Key="settings_check_prereleases">同时提醒预发布版本</s:String>
     <s:String x:Key="settings_save">保存</s:String>
+    <!--#endregion -->
+
+    <!--#region UpdatePopup -->
+    <s:String x:Key="up_popup_title">发现新版本</s:String>
+    <s:String x:Key="up_warning">WandEnhancer 不会自动更新自身。请在你自己的 fork 中构建新版本，或直接打开 Release 页面。</s:String>
+    <s:String x:Key="up_current_version">当前版本：</s:String>
+    <s:String x:Key="up_latest_version">最新版本：</s:String>
+    <s:String x:Key="up_release_notes">更新说明</s:String>
+    <s:String x:Key="up_show_more">查看完整更新日志</s:String>
+    <s:String x:Key="up_show_less">收起，只看更新说明</s:String>
+    <s:String x:Key="up_loading_changelog">加载中...</s:String>
+    <s:String x:Key="up_changelog_failed">无法加载完整更新日志。</s:String>
+    <s:String x:Key="up_release_notes_unavailable">本次发布未提供更新说明。</s:String>
+    <s:String x:Key="up_open_release">打开 Release 页面</s:String>
     <!--#endregion -->
 
     <!--#region EnhanceVectorsPopup -->
@@ -31,32 +46,170 @@
     <s:String x:Key="pv_remote_web_panel_preview">启用远程访问（beta）</s:String>
     <s:String x:Key="pv_custom_scripts">自定义脚本</s:String>
     <s:String x:Key="pv_add_js_scripts">添加 .js</s:String>
-    <s:String x:Key="pv_custom_scripts_hint">选中的 .js 文件会打包到 Wand 并在渲染器中加载。</s:String>
+    <s:String x:Key="pv_custom_scripts_hint">选中的 .js 文件会打包进 Wand，并在渲染进程中加载。</s:String>
     <s:String x:Key="pv_no_custom_scripts">未选择脚本</s:String>
     <s:String x:Key="pv_start">开始</s:String>
-    <s:String x:Key="pv_auto_apply">更新后自动应用</s:String>
+    <s:String x:Key="pv_auto_apply">更新后自动重新应用</s:String>
+    <s:String x:Key="pv_popup_title">我们要增强哪些功能？</s:String>
     <s:String x:Key="pv_patch_method">补丁方式</s:String>
-    <s:String x:Key="pv_strategy_static">Static (推荐)</s:String>
-    <s:String x:Key="pv_strategy_supervised">Supervised</s:String>
-    <s:String x:Key="pv_strategy_hint">Static 会修改磁盘上的 Wand，从而破坏其数字签名。Supervised 在每次启动时于内存中打补丁 - 可能触发杀毒软件，并且在某些环境下可能无法运行。</s:String>
-    <s:String x:Key="pv_popup_title">我们要增强什么？</s:String>
+    <s:String x:Key="pv_strategy_static">静态方式（推荐）</s:String>
+    <s:String x:Key="pv_strategy_supervised">运行时托管方式</s:String>
+    <s:String x:Key="pv_strategy_hint">静态方式会直接修改磁盘上的 Wand，从而导致其数字签名失效。运行时托管方式在每次启动时于内存中打补丁——可能会触发杀毒软件，并且并非在所有环境下都能正常运行。</s:String>
     <!--#endregion -->
 
     <!--#region Runtime log -->
-    <s:String x:Key="log_install_found">在 {0} ({1}) 找到 WeMod 目录</s:String>
-    <s:String x:Key="log_already_patched">WeMod 已经修补过。如果想再次修补，请先恢复备份。</s:String>
-    <s:String x:Key="log_ready">准备修补。</s:String>
-    <s:String x:Key="log_install_not_found">未找到 WeMod 目录。</s:String>
-    <s:String x:Key="log_no_directory">无法执行。请先指定目录。</s:String>
-    <s:String x:Key="log_invalid_directory">选择的文件夹 {0} 不是有效的 WeMod 目录。</s:String>
-    <s:String x:Key="log_restore_failed">恢复备份失败: {0}</s:String>
-    <s:String x:Key="log_patch_failed">修补失败: {0}</s:String>
+    <s:String x:Key="log_type_info">信息</s:String>
+    <s:String x:Key="log_type_warn">注意</s:String>
+    <s:String x:Key="log_type_error">错误</s:String>
+    <s:String x:Key="log_type_success">成功</s:String>
+    <s:String x:Key="log_install_found">WeMod(Wand)安装目录位于 {0}（{1}）</s:String>
+    <s:String x:Key="log_already_patched">WeMod(Wand)已打好补丁，如需再次安装补丁，请先恢复原始备份。</s:String>
+    <s:String x:Key="log_ready">准备就绪，可以开始打补丁。</s:String>
+    <s:String x:Key="log_install_not_found">未找到 WeMod(Wand) 安装目录。</s:String>
+    <s:String x:Key="log_no_directory">无法执行，请先指定目录。</s:String>
+    <s:String x:Key="log_invalid_directory">所选文件夹 {0} 不是有效的 WeMod(Wand) 目录。</s:String>
+    <s:String x:Key="log_restore_failed">恢复备份失败：{0}</s:String>
+    <s:String x:Key="log_patch_failed">打补丁失败：{0}</s:String>
     <s:String x:Key="log_copied">日志已复制到剪贴板。</s:String>
-    <s:String x:Key="log_copy_failed">复制日志失败: {0}</s:String>
-    <s:String x:Key="log_exported">日志已导出至 {0}。</s:String>
-    <s:String x:Key="log_export_failed">导出日志失败: {0}</s:String>
-    <s:String x:Key="log_open_link_failed">无法在浏览器中打开 {0}。</s:String>
-    <s:String x:Key="dialog_pick_install">选择 WeMod 目录</s:String>
+    <s:String x:Key="log_copy_failed">复制日志失败：{0}</s:String>
+    <s:String x:Key="log_exported">日志已导出到 {0}。</s:String>
+    <s:String x:Key="log_export_failed">导出日志失败：{0}</s:String>
+    <s:String x:Key="dialog_pick_install">选择 WeMod(Wand) 目录</s:String>
     <!--#endregion -->
 
+    <!--#region Patching engine -->
+    <s:String x:Key="enh_backup_creating">正在创建备份...</s:String>
+    <s:String x:Key="enh_backup_restoring_before_patch">已发现备份，打补丁前先还原原始 app.asar...</s:String>
+    <s:String x:Key="enh_unpacked_backup_creating">正在创建 app.asar.unpacked 的备份...</s:String>
+    <s:String x:Key="enh_unpacked_restoring_before_patch">打补丁前先还原原始 app.asar.unpacked...</s:String>
+    <s:String x:Key="enh_unpacked_missing">app.asar.unpacked 缺失且没有备份。请先恢复 WeMod(Wand) 原始安装文件，或重新安装 WeMod(Wand)，然后再打补丁。</s:String>
+    <s:String x:Key="enh_app_asar_missing">未找到 app.asar</s:String>
+    <s:String x:Key="enh_patch_done">完成！</s:String>
+    <s:String x:Key="enh_extracting_asar">正在解包 app.asar...</s:String>
+    <s:String x:Key="enh_unpack_failed">解包 app.asar 失败：{0}</s:String>
+    <s:String x:Key="enh_pack_failed">打包 app.asar 失败：{0}</s:String>
+    <s:String x:Key="enh_patch_failed_restored">打补丁失败，已恢复 WeMod(Wand) 原始文件。</s:String>
+    <s:String x:Key="enh_patch_failed_rollback_incomplete">打补丁失败，且回滚未完成：{0}。启动 WeMod(Wand) 前请先执行恢复。</s:String>
+    <s:String x:Key="enh_backup_incomplete">备份不完整。请先恢复 WeMod(Wand) 原始安装文件，或重新安装 WeMod(Wand)。</s:String>
+    <s:String x:Key="enh_backup_restored">备份已成功恢复。</s:String>
+    <!--#endregion -->
+
+    <!--#region Auxiliary compatibility -->
+    <s:String x:Key="aux_not_managed">{0} 不是托管程序集，已跳过不处理。</s:String>
+    <s:String x:Key="aux_no_caller">在 {1} 中未找到 {0} 的调用方，辅助服务可能已发生变化。</s:String>
+    <s:String x:Key="aux_compat_applied">已应用辅助服务兼容性处理（{0} 个签名、{1} 个 ASAR、{2} 处 fuse 校验、{3} 处已修改）。</s:String>
+    <!--#endregion -->
+
+    <!--#region Supervised strategy -->
+    <s:String x:Key="strat_read_failed">无法读取 {0}：{1}</s:String>
+    <s:String x:Key="strat_start_failed">无法启动 WeMod(Wand)：{0}</s:String>
+    <s:String x:Key="strat_start_elevation">无法启动 WeMod(Wand)（{0}）。WeMod(Wand) 被设置为「以管理员身份运行」，因此无法通过这种方式启动。请在 Wand.exe 的属性中取消勾选该选项，然后重新启动。</s:String>
+    <s:String x:Key="strat_started_pid">已启动 {0}，进程 ID 为 {1}。</s:String>
+    <s:String x:Key="strat_no_fuse_block">{0} 中没有 Electron fuse 区块。已打补丁的 WeMod(Wand) 会以 {1} 退出，未打补丁的则不受影响。</s:String>
+    <s:String x:Key="strat_watch_failed">无法监视 WeMod(Wand) 的新进程（{0}）。WeMod(Wand) 仍会运行，但游戏内浮层将无法使用。</s:String>
+    <s:String x:Key="strat_exit_unreadable">WeMod(Wand) 已退出，但无法读取其退出码。</s:String>
+    <s:String x:Key="strat_exited">WeMod(Wand) 已退出，退出码 {0}。</s:String>
+    <s:String x:Key="strat_quit_immediately">WeMod(Wand) 刚启动就退出了：已有另一个 WeMod(Wand) 正在运行并接管了本次启动。该实例中没有程序清除 fuse，所以窗口一直是黑的。请在任务管理器中结束所有 WeMod(Wand) 进程，然后重新启动。</s:String>
+    <s:String x:Key="strat_fuse_cleared_all">WeMod(Wand) 已关闭：已在 {0} 个进程中清除 fuse。</s:String>
+    <s:String x:Key="strat_fuse_cleared_missed">WeMod(Wand) 已关闭：已在 {0} 个进程中清除 fuse，{1} 个未清除。</s:String>
+    <s:String x:Key="strat_fuse_timeout">进程 {0} 在 {1} 毫秒后仍未清除 fuse：{2}。它可能会以 {3} 退出。</s:String>
+    <s:String x:Key="strat_pid_cleared">进程 {0} 已启动 - fuse 已清除。</s:String>
+    <s:String x:Key="strat_fuse_missed_on_exit">进程 {0} 退出前未能清除 fuse：{1}。</s:String>
+    <s:String x:Key="strat_pid_exited">进程 {0} 已退出，退出码 {1}。</s:String>
+    <!--#endregion -->
+
+    <!--#region Static strategy -->
+    <s:String x:Key="strat_fuse_clear_failed">无法清除 {0} 中的 ASAR 完整性 fuse。</s:String>
+    <!--#endregion -->
+
+    <!--#region ASAR content -->
+    <s:String x:Key="asar_no_bundle">未找到应用包</s:String>
+    <s:String x:Key="asar_capability_missing">[{0}] 该能力不存在，已跳过</s:String>
+    <s:String x:Key="asar_apply_failed">应用补丁失败：{0}。可能是该版本暂不支持。</s:String>
+    <!--#endregion -->
+
+    <!--#region JavaScript patches -->
+    <s:String x:Key="js_patch_failed">[{0}] {1}。可能是该版本暂不支持。</s:String>
+    <s:String x:Key="js_target_found">[{0}] 已在 {1} 中找到目标</s:String>
+    <s:String x:Key="js_patch_applied">[{0}] 补丁已应用</s:String>
+    <!--#endregion -->
+
+    <!--#region Remote panel -->
+    <s:String x:Key="rpanel_bridge_missing">缺少远程桥接产物。打补丁前请先运行 `cd web-panel &amp;&amp; pnpm run build`。</s:String>
+    <s:String x:Key="rpanel_scripts_missing">缺少远程渲染器脚本产物。打补丁前请先运行 `cd web-panel &amp;&amp; pnpm run build`。</s:String>
+    <s:String x:Key="rpanel_injected">已将远程面板资源与渲染器脚本注入 app.asar（默认 {0} 个，已选 {1} 个，本地 {2} 个）</s:String>
+    <s:String x:Key="ws_artifact_missing">找不到必需的工程产物：{0}</s:String>
+    <s:String x:Key="ws_resource_missing">找不到内嵌资源：{0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Launcher deployment -->
+    <s:String x:Key="launch_icon_copy_failed">无法将 WeMod(Wand) 图标复制到启动器，改用默认图标。</s:String>
+    <s:String x:Key="launch_deployed">启动器已部署到根目录</s:String>
+    <s:String x:Key="launch_squirrel_root_unknown">无法确定 Squirrel 根目录</s:String>
+    <!--#endregion -->
+
+    <!--#region Update watcher -->
+    <s:String x:Key="watch_already_owned">已有另一个监视器占用此安装，正在退出。</s:String>
+    <s:String x:Key="watch_watching">正在监视 {0}，等待新的 WeMod(Wand) 版本。</s:String>
+    <s:String x:Key="watch_disabled">自动应用已不再启用，正在退出。</s:String>
+    <s:String x:Key="watch_stopped">收到停止请求，正在退出。</s:String>
+    <s:String x:Key="watch_new_folder">检测到新的版本目录：{0}</s:String>
+    <s:String x:Key="watch_settle_timeout">等待 {0} 安装完成超时，已放弃。</s:String>
+    <s:String x:Key="watch_disabled_while_waiting">等待期间自动应用已被关闭，已跳过。</s:String>
+    <s:String x:Key="watch_not_latest">{0} 不是（或已不再是）最新安装，已跳过。</s:String>
+    <s:String x:Key="watch_already_patched">{0} 已打好补丁，无需处理。</s:String>
+    <s:String x:Key="watch_reapplying">正在对 {0} 重新应用补丁...</s:String>
+    <s:String x:Key="watch_succeeded">更新后自动打补丁成功。</s:String>
+    <s:String x:Key="watch_failed">更新后自动打补丁失败：{0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Startup -->
+    <s:String x:Key="prog_no_install_under">在 {0} 下未找到 WeMod(Wand) 安装，改为打开界面。</s:String>
+    <s:String x:Key="prog_auto_patch_failed">自动打补丁失败：{0}</s:String>
+    <s:String x:Key="prog_auto_patch_hint">新版 WeMod(Wand) 可能需要更新的补丁。请先恢复备份，再重新打补丁。</s:String>
+    <s:String x:Key="prog_background_failed">后台任务失败：{0}</s:String>
+    <s:String x:Key="prog_unknown_error">未知错误</s:String>
+    <s:String x:Key="up_changelog_load_failed">无法加载完整更新日志：{0}</s:String>
+    <!--#endregion -->
+
+    <!--#region Patch locator internals -->
+    <s:String x:Key="cfg_client_state_missing">无法定位 client-state 数据对象</s:String>
+    <s:String x:Key="cfg_remote_listener_missing">无法定位远程数值监听器</s:String>
+    <s:String x:Key="cfg_remote_handler_missing">无法定位远程数值处理器</s:String>
+    <s:String x:Key="cfg_subscription_missing">无法定位修改器数值订阅</s:String>
+    <s:String x:Key="cfg_callback_missing">无法定位修改器数值回调</s:String>
+    <s:String x:Key="cfg_locate_failed">无法定位 {0}</s:String>
+    <s:String x:Key="cfg_ambiguous">{0} 匹配到多处，无法确定正确的调用点</s:String>
+    <s:String x:Key="jsf_resolve_failed">无法在 {1}() 中解析 '{0}'</s:String>
+    <s:String x:Key="jsf_pattern_missing">在 {1}() 中未找到匹配模式 '{0}'</s:String>
+    <s:String x:Key="jsf_no_return">{0}() 中没有顶层 return 语句</s:String>
+    <!--#endregion -->
+
+
+    <!--#region ASAR integrity fuse -->
+    <s:String x:Key="fuse_no_block">{0} 中没有 Electron fuse 区块，无需改动。</s:String>
+    <s:String x:Key="fuse_cleared">已在磁盘上清除 {0} 的 ASAR 完整性 fuse。</s:String>
+    <s:String x:Key="fuse_restore_missing">在 {0} 中找不到需要恢复的 fuse，保留 {1}。</s:String>
+    <s:String x:Key="fuse_restored">已在磁盘上恢复 {0} 的 ASAR 完整性 fuse。</s:String>
+    <s:String x:Key="fuse_problem_memory_unreadable">无法读取其内存（{0}）</s:String>
+    <s:String x:Key="fuse_problem_block_mismatch">fuse 区块的位置与磁盘文件记录的不一致</s:String>
+    <s:String x:Key="fuse_problem_page_not_writable">无法将该内存页改为可写（{0}）</s:String>
+    <s:String x:Key="fuse_problem_write_refused">写入被拒绝（{0}）</s:String>
+    <s:String x:Key="fuse_problem_open_failed">无法打开该进程（{0}）</s:String>
+    <s:String x:Key="aux_not_found">未找到辅助服务，已跳过兼容性检查。</s:String>
+    <s:String x:Key="aux_unsupported">辅助服务不受支持，它会拒绝已打补丁的 WeMod(Wand)。</s:String>
+    <s:String x:Key="aux_asar_signature_unknown">无法识别的辅助服务 ASAR 校验签名。</s:String>
+    <s:String x:Key="aux_asar_anchor_overlap">辅助服务 ASAR 锚点与返回桩重叠。</s:String>
+    <s:String x:Key="aux_asar_ambiguous">辅助服务 ASAR 校验方法存在歧义。</s:String>
+    <s:String x:Key="aux_asar_unrecognised">检测到辅助服务 ASAR 校验，但无法识别。</s:String>
+    <s:String x:Key="aux_fuse_reader_ambiguous">辅助服务 Electron fuse 读取器存在歧义。</s:String>
+    <s:String x:Key="aux_fuse_signature_unknown">无法识别的辅助服务 fuse 校验签名。</s:String>
+    <s:String x:Key="aux_fuse_reader_overlap">辅助服务 fuse 读取调用与返回桩重叠。</s:String>
+    <s:String x:Key="aux_fuse_unrecognised">检测到辅助服务 fuse 校验，但无法识别。</s:String>
+    <s:String x:Key="watch_setup_failed">无法设置后台更新监视器：{0}</s:String>
+    <s:String x:Key="watch_already_running">更新监视器已在运行。</s:String>
+    <s:String x:Key="watch_installed">更新监视器已安装并在后台运行。</s:String>
+    <s:String x:Key="cfg_remote_setvalue_call">远程 setValue 调用</s:String>
+    <s:String x:Key="cfg_trainer_info_param">修改器信息参数</s:String>
+    <!--#endregion -->
 </ResourceDictionary>

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 
 namespace WandEnhancer.Core.Patching.Shared
@@ -32,10 +33,10 @@ namespace WandEnhancer.Core.Patching.Shared
             // Shortcuts point at the stub we just replaced, so give it Wand's own icon (cosmetic).
             if (File.Exists(stubBackup) && !IconTransplant.Copy(stubBackup, stubPath))
             {
-                log?.Invoke("[ENHANCER] Could not copy Wand's icon to the launcher; using the default.", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Get("launch_icon_copy_failed"), ELogType.Warn);
             }
 
-            log?.Invoke("[ENHANCER] Launcher deployed to root directory", ELogType.Info);
+            log?.Invoke(LocalizationManager.Get("launch_deployed"), ELogType.Info);
         }
 
         public static void Restore(WeModConfig install)
@@ -61,7 +62,7 @@ namespace WandEnhancer.Core.Patching.Shared
             string root = Directory.GetParent(install.RootDirectory)?.FullName;
             if (string.IsNullOrEmpty(root))
             {
-                throw new Exception("[ENHANCER] Cannot determine Squirrel root directory");
+                throw new Exception(LocalizationManager.Get("launch_squirrel_root_unknown"));
             }
 
             return root;

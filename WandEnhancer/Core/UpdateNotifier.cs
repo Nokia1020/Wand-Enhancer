@@ -64,7 +64,8 @@ namespace WandEnhancer.Core
             }
             catch (Exception e)
             {
-                LauncherLog.Write($"Could not load the full changelog: {e.Message}", ELogType.Warn);
+                LauncherLog.Write(LocalizationManager.Format("up_changelog_load_failed", e.Message),
+                    ELogType.Warn);
                 return null;
             }
         }

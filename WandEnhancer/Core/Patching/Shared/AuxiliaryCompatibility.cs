@@ -4,6 +4,7 @@ using System.Linq;
 using WandEnhancer.Core.Patching.Strategies;
 using WandEnhancer.Core.Patching.Strategies.Static;
 
+using WandEnhancer.Core.Services;
 namespace WandEnhancer.Core.Patching.Shared
 {
     internal static class AuxiliaryCompatibility
@@ -16,11 +17,11 @@ namespace WandEnhancer.Core.Patching.Shared
                 ? Directory.EnumerateFiles(directory, "*AuxiliaryService.exe").SingleOrDefault() : null;
             if (auxiliary == null)
             {
-                context.Log?.Invoke("[ENHANCER] No auxiliary service found; skipping compatibility checks.", ELogType.Info);
+                context.Log?.Invoke(LocalizationManager.Get("aux_not_found"), ELogType.Info);
                 return;
             }
             if (AuxTrustNeutralizer.Neutralize(auxiliary, context.Log) < 0)
-                throw new InvalidDataException("[ENHANCER] Unsupported auxiliary service; it would reject the patched Wand.");
+                throw new InvalidDataException(LocalizationManager.Get("aux_unsupported"));
         }
     }
 }

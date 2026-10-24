@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 using WandEnhancer.Utils;
 
@@ -54,7 +55,7 @@ namespace WandEnhancer.Core.Patching.Content
 
             if (!File.Exists(targetBridgePath))
             {
-                throw new FileNotFoundException("[ENHANCER] Remote bridge artifact is missing. Run `cd web-panel && pnpm run build` before patching.", targetBridgePath);
+                throw new FileNotFoundException(LocalizationManager.Get("rpanel_bridge_missing"), targetBridgePath);
             }
 
             int defaultScriptCount = Directory.Exists(targetScriptsRoot)
@@ -62,13 +63,14 @@ namespace WandEnhancer.Core.Patching.Content
                 : 0;
             if (defaultScriptCount == 0)
             {
-                throw new FileNotFoundException("[ENHANCER] Remote renderer script artifacts are missing. Run `cd web-panel && pnpm run build` before patching.", targetScriptsRoot);
+                throw new FileNotFoundException(LocalizationManager.Get("rpanel_scripts_missing"), targetScriptsRoot);
             }
 
             int selectedScriptCount = CopySelectedJavaScriptFiles(customScriptPaths, targetScriptsRoot);
             int localScriptCount = CopyJavaScriptFiles(localCustomScriptsRoot, targetScriptsRoot);
 
-            _logger($"[ENHANCER] Injected remote panel assets and renderer scripts into app.asar (default: {defaultScriptCount}, selected: {selectedScriptCount}, local: {localScriptCount})", ELogType.Info);
+            _logger(LocalizationManager.Format("rpanel_injected", defaultScriptCount, selectedScriptCount,
+                localScriptCount), ELogType.Info);
         }
 
         private static string FindWorkspacePath(params string[] segments)
@@ -85,7 +87,8 @@ namespace WandEnhancer.Core.Patching.Content
                 current = Directory.GetParent(current)?.FullName;
             }
 
-            throw new FileNotFoundException($"Required workspace artifact not found: {Path.Combine(segments)}");
+            throw new FileNotFoundException(
+                LocalizationManager.Format("ws_artifact_missing", Path.Combine(segments)));
         }
 
         private static int CopyJavaScriptFiles(string sourceDir, string destinationDir)
@@ -146,7 +149,7 @@ namespace WandEnhancer.Core.Patching.Content
                 {
                     if (resource == null)
                     {
-                        throw new FileNotFoundException($"Embedded resource not found: {resourceName}");
+                        throw new FileNotFoundException(LocalizationManager.Format("ws_resource_missing", resourceName));
                     }
 
                     using (var output = File.Create(destinationPath))

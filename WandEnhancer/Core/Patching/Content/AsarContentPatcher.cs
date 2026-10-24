@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 
 namespace WandEnhancer.Core.Patching.Content
@@ -32,7 +33,7 @@ namespace WandEnhancer.Core.Patching.Content
 
             if (!items.Any())
             {
-                throw new Exception("[ENHANCER] No app bundle found");
+                throw new Exception(LocalizationManager.Get("asar_no_bundle"));
             }
 
             var remainingPatches = new HashSet<EPatchType>(patchTypes);
@@ -89,13 +90,13 @@ namespace WandEnhancer.Core.Patching.Content
 
             foreach (var skipped in unapplied.Where(entry => entry.Patch.IsResolved))
             {
-                _logger($"[ENHANCER] [{skipped.Label}] Capability not present, skipping", ELogType.Info);
+                _logger(LocalizationManager.Format("asar_capability_missing", skipped.Label), ELogType.Info);
             }
 
             var failed = unapplied.Where(entry => !entry.Patch.IsResolved).Select(entry => entry.Label).ToList();
             if (failed.Count > 0)
             {
-                throw new Exception($"[ENHANCER] Failed to apply patches: {string.Join(", ", failed)}. The version may not be supported.");
+                throw new Exception(LocalizationManager.Format("asar_apply_failed", string.Join(", ", failed)));
             }
         }
 

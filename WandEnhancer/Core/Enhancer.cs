@@ -7,6 +7,7 @@ using AsarSharp;
 using WandEnhancer.Core.Patching.Content;
 using WandEnhancer.Core.Patching.Shared;
 using WandEnhancer.Core.Patching.Strategies;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 using WandEnhancer.Utils;
 
@@ -110,23 +111,23 @@ namespace WandEnhancer.Core
 
             if (!File.Exists(_backupPath))
             {
-                _logger("[ENHANCER] Creating backup...", ELogType.Info);
+                _logger(LocalizationManager.Get("enh_backup_creating"), ELogType.Info);
                 CreateBackupFile(_asarPath, _backupPath);
             }
             else
             {
-                _logger("[ENHANCER] Backup found, restoring pristine app.asar before patching...", ELogType.Info);
+                _logger(LocalizationManager.Get("enh_backup_restoring_before_patch"), ELogType.Info);
                 AsarSharp.Utils.Extensions.CopyOver(_backupPath, _asarPath);
             }
 
             if (!Directory.Exists(_unpackedBackupPath) && Directory.Exists(_unpackedPath))
             {
-                _logger("[ENHANCER] Creating backup of app.asar.unpacked...", ELogType.Info);
+                _logger(LocalizationManager.Get("enh_unpacked_backup_creating"), ELogType.Info);
                 CreateBackupDirectory(_unpackedPath, _unpackedBackupPath);
             }
             else if (Directory.Exists(_unpackedBackupPath))
             {
-                _logger("[ENHANCER] Restoring pristine app.asar.unpacked before patching...", ELogType.Info);
+                _logger(LocalizationManager.Get("enh_unpacked_restoring_before_patch"), ELogType.Info);
                 if (Directory.Exists(_unpackedPath))
                 {
                     Directory.Delete(_unpackedPath, true);
@@ -136,12 +137,12 @@ namespace WandEnhancer.Core
             }
             else if (!Directory.Exists(_unpackedPath))
             {
-                throw new Exception("[ENHANCER] app.asar.unpacked is missing and no backup exists. Restore the original Wand installation files or reinstall Wand, then patch again.");
+                throw new Exception(LocalizationManager.Get("enh_unpacked_missing"));
             }
 
             if (!File.Exists(_asarPath))
             {
-                throw new Exception("app.asar not found");
+                throw new Exception(LocalizationManager.Get("enh_app_asar_missing"));
             }
 
             // Start from a pristine executable to not inherit a broken signature from prior static patches.
@@ -191,7 +192,7 @@ namespace WandEnhancer.Core
                 throw;
             }
 
-            _logger("[ENHANCER] Done!", ELogType.Success);
+            _logger(LocalizationManager.Get("enh_patch_done"), ELogType.Success);
         }
 
         private static void CreateBackupFile(string source, string destination)
@@ -259,12 +260,12 @@ namespace WandEnhancer.Core
         {
             try
             {
-                _logger("[ENHANCER] Extracting app.asar...", ELogType.Info);
+                _logger(LocalizationManager.Get("enh_extracting_asar"), ELogType.Info);
                 AsarExtractor.ExtractAll(_asarPath, _unpackedPath);
             }
             catch (Exception e)
             {
-                throw new Exception($"[ENHANCER] Failed to unpack app.asar: {e.Message}", e);
+                throw new Exception(LocalizationManager.Format("enh_unpack_failed", e.Message), e);
             }
         }
 
@@ -279,7 +280,7 @@ namespace WandEnhancer.Core
             }
             catch (Exception e)
             {
-                throw new Exception($"[ENHANCER] Failed to pack app.asar: {e.Message}", e);
+                throw new Exception(LocalizationManager.Format("enh_pack_failed", e.Message), e);
             }
         }
 
@@ -307,12 +308,12 @@ namespace WandEnhancer.Core
                 LauncherDeployment.Restore(_weModConfig);
                 DiskFusePatch.Remove(_weModConfig.ExecutablePath, _logger);
 
-                _logger("[ENHANCER] Patch failed - the original Wand files were restored.", ELogType.Warn);
+                _logger(LocalizationManager.Get("enh_patch_failed_restored"), ELogType.Warn);
             }
             catch (Exception e)
             {
-                _logger($"[ENHANCER] Patch failed and the rollback did not finish: {e.Message}. " +
-                        "Use Restore before launching Wand.", ELogType.Error);
+                _logger(LocalizationManager.Format("enh_patch_failed_rollback_incomplete", e.Message),
+                    ELogType.Error);
             }
         }
 
@@ -320,7 +321,7 @@ namespace WandEnhancer.Core
         {
             if (!File.Exists(_backupPath) || !Directory.Exists(_unpackedBackupPath))
             {
-                throw new Exception("[ENHANCER] Backup is incomplete. Restore the original Wand installation files or reinstall Wand.");
+                throw new Exception(LocalizationManager.Get("enh_backup_incomplete"));
             }
 
             ProcessTerminator.TryKillProcess(_weModConfig.BrandName);
@@ -367,7 +368,7 @@ namespace WandEnhancer.Core
 
             File.Delete(_backupPath);
             Directory.Delete(_unpackedBackupPath, true);
-            _logger("[ENHANCER] Backup restored successfully.", ELogType.Success);
+            _logger(LocalizationManager.Get("enh_backup_restored"), ELogType.Success);
         }
     }
 }

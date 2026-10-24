@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using WandEnhancer.Core.Patching.Shared;
+using WandEnhancer.Core.Services;
 
 namespace WandEnhancer.Core.Patching.Strategies.Static
 {
@@ -13,7 +14,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
         {
             if (!DiskFusePatch.Apply(context.Install.ExecutablePath, context.Log))
             {
-                throw new Exception($"[ENHANCER] Could not clear the ASAR integrity fuse in {Path.GetFileName(context.Install.ExecutablePath)}.");
+                throw new Exception(LocalizationManager.Format("strat_fuse_clear_failed",
+                    Path.GetFileName(context.Install.ExecutablePath)));
             }
 
             AuxiliaryCompatibility.Apply(context);
@@ -33,7 +35,8 @@ namespace WandEnhancer.Core.Patching.Strategies.Static
             }
             catch (Exception e)
             {
-                context.Log?.Invoke($"Could not start Wand: {e.Message}", ELogType.Error);
+                context.Log?.Invoke(LocalizationManager.Format("strat_start_failed", e.Message),
+                    ELogType.Error);
                 return false;
             }
         }

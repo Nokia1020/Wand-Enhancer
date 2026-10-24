@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using WandEnhancer.Core;
 using WandEnhancer.Core.Patching.Strategies;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 using WandEnhancer.Utils;
 using WandEnhancer.View.MainWindow;
@@ -17,8 +18,48 @@ namespace WandEnhancer
     public static class Program
     {
         /// <summary>Log lines from a failed startup auto-patch, replayed by the UI when it opens.</summary>
-        public static readonly List<KeyValuePair<string, ELogType>> StartupLog =
-            new List<KeyValuePair<string, ELogType>>();
+        public static readonly List<StartupLogEntry> StartupLog = new List<StartupLogEntry>();
+
+        /// <summary>
+        /// A startup log line stored as a resource key plus arguments instead of finished text:
+        /// the WPF localization resources only exist once the UI Application is running, so the
+        /// text is resolved when the UI replays the log.
+        /// </summary>
+        public sealed class StartupLogEntry
+        {
+            private readonly string _key;
+            private readonly object[] _args;
+            private readonly string _message;
+
+            private StartupLogEntry(string key, object[] args, string message, ELogType type)
+            {
+                _key = key;
+                _args = args;
+                _message = message;
+                Type = type;
+            }
+
+            /// <summary>Line whose text the caller already resolved.</summary>
+            public static StartupLogEntry ForMessage(string message, ELogType type)
+            {
+                return new StartupLogEntry(null, null, message, type);
+            }
+
+            /// <summary>
+            /// Line kept as a resource key plus arguments, because the WPF localization
+            /// resources only exist once the UI Application is running.
+            /// </summary>
+            public static StartupLogEntry ForResource(string key, ELogType type,
+                params object[] args)
+            {
+                return new StartupLogEntry(key, args, null, type);
+            }
+
+            public ELogType Type { get; }
+
+            /// <summary>Translated text; only valid once the UI resources are loaded.</summary>
+            public string Message => _message ?? LocalizationManager.Format(_key, _args);
+        }
 
         [STAThread]
         public static void Main(string[] args)
@@ -104,7 +145,8 @@ namespace WandEnhancer
             {
                 // RecordStartupLog, not LauncherLog.Write: the window is about to open, and this is
                 // the line that explains why.
-                RecordStartupLog($"No Wand install found under {myDir}; opening the UI instead.", ELogType.Error);
+                RecordStartupLog("prog_no_install_under",
+                    "No WeMod(Wand) install found under {0}; opening the UI instead.", ELogType.Error, myDir);
                 return false;
             }
 
@@ -196,10 +238,13 @@ namespace WandEnhancer
             }
             catch (Exception e)
             {
-                // Localization resources are not loaded yet in launcher mode (no Application),
-                // so these two replay into the UI log in English by design.
-                RecordStartupLog($"Auto-patch failed: {e.Message}", ELogType.Error);
-                RecordStartupLog("The new Wand version may need updated patches. Restore the backup and patch again.", ELogType.Warn);
+                // Startup lines are stored as resource keys and translated when the UI
+                // replays them; the launcher log keeps the source-language text.
+                RecordStartupLog("prog_auto_patch_failed", "Auto-patch failed: {0}", ELogType.Error,
+                    e.Message);
+                RecordStartupLog("prog_auto_patch_hint",
+                    "The new WeMod(Wand) version may need updated patches. Restore the backup and patch again.",
+                    ELogType.Warn);
                 return false;
             }
         }
@@ -207,8 +252,19 @@ namespace WandEnhancer
         /// <summary>Buffers logs for the UI and mirrors them to disk for headless runs.</summary>
         private static void RecordStartupLog(string message, ELogType type)
         {
-            StartupLog.Add(new KeyValuePair<string, ELogType>(message, type));
-            LauncherLog.Write(message, type);
+            var entry = StartupLogEntry.ForMessage(message, type);
+            StartupLog.Add(entry);
+            LauncherLog.Write(entry.Message, type);
+        }
+
+        private static void RecordStartupLog(string key, string sourceText, ELogType type,
+            params object[] args)
+        {
+            var entry = StartupLogEntry.ForResource(key, type, args);
+            StartupLog.Add(entry);
+            // The launcher log is a diagnostic artifact, so keep the source-language text.
+            LauncherLog.Write(args != null && args.Length > 0 ? string.Format(sourceText, args) : sourceText,
+                type);
         }
         
         
@@ -216,14 +272,15 @@ namespace WandEnhancer
         private static void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             e.SetObserved();
-            RecordStartupLog($"Background task failed: {e.Exception.GetBaseException().Message}", ELogType.Error);
+            RecordStartupLog("prog_background_failed", "Background task failed: {0}", ELogType.Error,
+                e.Exception.GetBaseException().Message);
         }
 
         private static void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var error = e.ExceptionObject as Exception;
             MessageBox.Show(
-                error?.Message ?? e.ExceptionObject?.ToString() ?? "Unknown error",
+                error?.Message ?? e.ExceptionObject?.ToString() ?? LocalizationManager.Get("prog_unknown_error"),
                 Constants.RepoName,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);

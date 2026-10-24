@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using WandEnhancer.Core.Js;
+using WandEnhancer.Core.Services;
 using WandEnhancer.Models;
 
 namespace WandEnhancer.Core
@@ -228,7 +229,7 @@ namespace WandEnhancer.Core
             int snapshotClose = js.MatchClose(snapshotOpen);
             if (method == null || snapshotOpen < 0 || snapshotClose < 0)
             {
-                throw new Exception("client-state payload object could not be located");
+                throw new Exception(LocalizationManager.Get("cfg_client_state_missing"));
             }
 
             // Remove the trailing comma before appending bridge fields.
@@ -304,7 +305,7 @@ namespace WandEnhancer.Core
             var receive = receiveOpen < 0 ? null : js.EnclosingFunction(receiveOpen);
             if (receive == null)
             {
-                throw new Exception("Remote value listener could not be located");
+                throw new Exception(LocalizationManager.Get("cfg_remote_listener_missing"));
             }
 
             string handler = receive.Resolve(
@@ -313,14 +314,15 @@ namespace WandEnhancer.Core
             var handlerMethod = js.FindFunction(handler);
             if (handlerMethod == null)
             {
-                throw new Exception("Remote value handler could not be located");
+                throw new Exception(LocalizationManager.Get("cfg_remote_handler_missing"));
             }
 
-            var setValue = MatchExactlyOnce(RemoteSetValue, handlerMethod.Body, "Remote setValue call");
+            var setValue = MatchExactlyOnce(RemoteSetValue, handlerMethod.Body,
+                LocalizationManager.Get("cfg_remote_setvalue_call"));
             var parameter = MatchExactlyOnce(
                 new Regex(@"setCurrentTrainer\(\s*(?<info>[\w$]+)"),
                 js.Text.Substring(method.Start, method.BodyOpen - method.Start),
-                "Trainer info parameter");
+                LocalizationManager.Get("cfg_trainer_info_param"));
 
             return Edits(method.InsertAtStart(PatchPayload.Load(
                 "remote-bridge-renderer",
@@ -342,7 +344,7 @@ namespace WandEnhancer.Core
             if (subscription == null || snapshot == null ||
                 subscription.Body.IndexOf(".onValueSet(", StringComparison.Ordinal) < 0)
             {
-                throw new Exception("Trainer value subscription could not be located");
+                throw new Exception(LocalizationManager.Get("cfg_subscription_missing"));
             }
 
             // Capture at subscription time so a late callback cannot impersonate the next trainer.
@@ -352,7 +354,7 @@ namespace WandEnhancer.Core
                 @"\.onValueSet\(\s*\(?\s*" + Regex.Escape(change) + @"\s*\)?\s*=>\s*\{");
             if (!callback.Success)
             {
-                throw new Exception("Trainer value callback could not be located");
+                throw new Exception(LocalizationManager.Get("cfg_callback_missing"));
             }
 
             return new[]
@@ -386,12 +388,12 @@ namespace WandEnhancer.Core
             var match = pattern.Match(text);
             if (!match.Success)
             {
-                throw new Exception($"{what} could not be located");
+                throw new Exception(LocalizationManager.Format("cfg_locate_failed", what));
             }
 
             if (match.NextMatch().Success)
             {
-                throw new Exception($"{what} matched more than once; cannot tell which call site is the right one");
+                throw new Exception(LocalizationManager.Format("cfg_ambiguous", what));
             }
 
             return match;

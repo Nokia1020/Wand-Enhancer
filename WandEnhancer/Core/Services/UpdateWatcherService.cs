@@ -37,7 +37,7 @@ namespace WandEnhancer.Core.Services
             {
                 if (!owned)
                 {
-                    log?.Invoke("[WATCHER] Another watcher already owns this install; exiting.", ELogType.Info);
+                    log?.Invoke(LocalizationManager.Get("watch_already_owned"), ELogType.Info);
                     return;
                 }
 
@@ -72,7 +72,7 @@ namespace WandEnhancer.Core.Services
             {
                 watcher.Created += (sender, e) => OnEntryCreated(e, squirrelRoot, log);
                 watcher.EnableRaisingEvents = true;
-                log?.Invoke($"[WATCHER] Watching {squirrelRoot} for new Wand versions.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Format("watch_watching", squirrelRoot), ELogType.Info);
 
                 // Self-check periodically as a safety net: Stop() should be the normal path, but
                 // if the saved config vanished some other way (the app folder was removed by
@@ -81,12 +81,12 @@ namespace WandEnhancer.Core.Services
                 {
                     if (!IsStillWanted(squirrelRoot))
                     {
-                        log?.Invoke("[WATCHER] Auto-apply is no longer configured; exiting.", ELogType.Info);
+                        log?.Invoke(LocalizationManager.Get("watch_disabled"), ELogType.Info);
                         return;
                     }
                 }
 
-                log?.Invoke("[WATCHER] Stop requested; exiting.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Get("watch_stopped"), ELogType.Info);
             }
         }
 
@@ -105,30 +105,30 @@ namespace WandEnhancer.Core.Services
 
         private static void TryPatchNewVersion(string versionRoot, string squirrelRoot, Action<string, ELogType> log)
         {
-            log?.Invoke($"[WATCHER] New version folder detected: {versionRoot}", ELogType.Info);
+            log?.Invoke(LocalizationManager.Format("watch_new_folder", versionRoot), ELogType.Info);
 
             if (!WaitForSettled(versionRoot))
             {
-                log?.Invoke($"[WATCHER] Gave up waiting for {versionRoot} to finish installing.", ELogType.Warn);
+                log?.Invoke(LocalizationManager.Format("watch_settle_timeout", versionRoot), ELogType.Warn);
                 return;
             }
 
             if (!IsStillWanted(squirrelRoot))
             {
-                log?.Invoke("[WATCHER] Auto-apply was turned off while waiting; skipping.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Get("watch_disabled_while_waiting"), ELogType.Info);
                 return;
             }
 
             var config = WeModInstalls.FindLatestWeMod(squirrelRoot);
             if (config == null || !PathsEqual(config.RootDirectory, versionRoot))
             {
-                log?.Invoke($"[WATCHER] {versionRoot} is not (or no longer) the latest install; skipping.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Format("watch_not_latest", versionRoot), ELogType.Info);
                 return;
             }
 
             if (Enhancer.IsPatched(config.RootDirectory))
             {
-                log?.Invoke($"[WATCHER] {versionRoot} is already patched; nothing to do.", ELogType.Info);
+                log?.Invoke(LocalizationManager.Format("watch_already_patched", versionRoot), ELogType.Info);
                 return;
             }
 
@@ -140,13 +140,14 @@ namespace WandEnhancer.Core.Services
 
             try
             {
-                log?.Invoke($"[WATCHER] Re-applying patches to {config.ExecutablePath}...", ELogType.Info);
+                log?.Invoke(LocalizationManager.Format("watch_reapplying", config.ExecutablePath),
+                    ELogType.Info);
                 new Enhancer(config, log, patchConfig).Patch();
-                log?.Invoke("[WATCHER] Auto-patch after update succeeded.", ELogType.Success);
+                log?.Invoke(LocalizationManager.Get("watch_succeeded"), ELogType.Success);
             }
             catch (Exception e)
             {
-                log?.Invoke($"[WATCHER] Auto-patch after update failed: {e.Message}", ELogType.Error);
+                log?.Invoke(LocalizationManager.Format("watch_failed", e.Message), ELogType.Error);
             }
         }
 
