@@ -75,7 +75,7 @@ namespace WandEnhancer
             if (TryLaunchMode(args))
                 return;
 
-            bool startupFailed = StartupLog.Exists(entry => entry.Value == ELogType.Error);
+            bool startupFailed = StartupLog.Exists(entry => entry.Type == ELogType.Error);
 
             var application = new App();
             application.InitializeComponent();
